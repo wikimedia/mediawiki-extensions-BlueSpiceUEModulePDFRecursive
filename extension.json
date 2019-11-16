@@ -1,0 +1,44 @@
+{
+	"name": "BlueSpiceUEModulePDFRecursive",
+	"version": "3.2.0-alpha",
+	"license-name": "GPL-3.0-only",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:UEModulePDFRecursive",
+	"author": [
+		"Robert Vogel"
+	],
+	"descriptionmsg": "bs-uemodulepdfrecursive-extension-description",
+	"type": "bluespice",
+	"bsgExtensions": {
+		"BlueSpiceUEModulePDFRecursive": {
+			"className": "UEModulePDFRecursive",
+			"extPath": "/BlueSpiceUEModulePDFRecursive",
+			"package": "BlueSpice Pro",
+			"status": "stable"
+		}
+	},
+	"BlueSpiceFoundationPermissionRegistry": {
+		"uemodulepdfrecursive-export": {
+			"type": "namespace",
+			"roles": [
+				"reader"
+			]
+		}
+	},
+	"GroupPermissions": {
+		"*": {
+			"uemodulepdfrecursive-export": true
+		}
+	},
+	"AvailableRights": [
+		"uemodulepdfrecursive-export"
+	],
+	"MessagesDirs": {
+		"BlueSpiceUEModulePDFRecursive": [
+			"i18n"
+		]
+	},
+	"AutoloadClasses": {
+		"UEModulePDFRecursive": "UEModulePDFRecursive.class.php"
+	},
+	"manifest_version": 1
+}

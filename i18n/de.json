@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robert Vogel <vogel@hallowelt.biz>"
+		]
+	},
+	"bs-uemodulepdfrecursive-extension-description": "Ermöglicht die Ausgabe von Artikeln und verlinkten Artikel im PDF Format.",
+	"UEModulePDFRecursive": "UniversalExport PDF Modul (Rekursiv)",
+	"prefs-uemodulepdfrecursive": "UniversalExport PDF Modul (Rekursiv)",
+	"prefs-UEModulePDFRecursive": "UniversalExport PDF Modul (Rekursiv)",
+	"extension-description": "Ermöglicht das rekursive Exportieren nach PDF",
+	"bs-uemodulepdfrecursive-widgetlink-recursive-text": "PDF Seite mit Verlinkungen",
+	"bs-uemodulepdfrecursive-widgetlink-recursive-title": "Diese und alle verlinkten Seiten im PDF Format ausgeben."
+}

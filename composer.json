@@ -1,0 +1,12 @@
+{
+	"name": "bluespice/uemodulepdfrecursive",
+	"type": "mediawiki-extension",
+	"description": "Enables recursive export of pages into PDF format",
+	"license": "GPL-3.0-only",
+	"extra": {
+		"installer-name": "BlueSpiceUEModulePDFRecursive"
+	},
+	"require": {
+		"composer/installers": "~1.0"
+	}
+}
