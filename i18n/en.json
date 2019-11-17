@@ -5,10 +5,8 @@
 		]
 	},
 	"bs-uemodulepdfrecursive-extension-description": "Enables recursive export of pages into PDF format.",
-	"UEModulePDFRecursive": "UniversalExport PDF Module (Recursive)",
-	"prefs-uemodulepdfrecursive": "UniversalExport PDF Module (Recursive)",
-	"prefs-UEModulePDFRecursive": "UniversalExport PDF Module (Recursive)",
-	"extension-description": "Enables recursive export to DOCX",
 	"bs-uemodulepdfrecursive-widgetlink-recursive-text": "PDF page with linked pages",
-	"bs-uemodulepdfrecursive-widgetlink-recursive-title": "Export this page and all linked pages as PDF."
+	"bs-uemodulepdfrecursive-widgetlink-recursive-title": "Export this page and all linked pages as PDF.",
+	"right-uemodulepdfrecursive-export": "exporting a page, including all linked pages, to PDF",
+	"action-uemodulepdfrecursive-export": "Exporting a page, including all linked pages, to PDF"
 }
