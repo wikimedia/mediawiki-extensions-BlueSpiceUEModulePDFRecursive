@@ -15,20 +15,24 @@
 		}
 	},
 	"type": "bluespice",
-	"bsgExtensions": {
-		"BlueSpiceUEModulePDFRecursive": {
-			"className": "UEModulePDFRecursive",
-			"extPath": "/BlueSpiceUEModulePDFRecursive",
-			"package": "BlueSpice Pro",
-			"status": "stable"
-		}
-	},
-	"BlueSpiceFoundationPermissionRegistry": {
-		"uemodulepdfrecursive-export": {
-			"type": "namespace",
-			"roles": [
-				"reader"
-			]
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceUEModulePDFRecursive": {
+					"className": "UEModulePDFRecursive",
+					"extPath": "/BlueSpiceUEModulePDFRecursive",
+					"package": "BlueSpice Pro",
+					"status": "stable"
+				}
+			},
+			"PermissionRegistry": {
+				"uemodulepdfrecursive-export": {
+					"type": "namespace",
+					"roles": [
+						"reader"
+					]
+				}
+			},
 		}
 	},
 	"GroupPermissions": {
@@ -47,5 +51,5 @@
 	"AutoloadClasses": {
 		"UEModulePDFRecursive": "UEModulePDFRecursive.class.php"
 	},
-	"manifest_version": 1
+	"manifest_version": 2
 }
