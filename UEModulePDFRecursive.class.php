@@ -33,6 +33,8 @@
  * - Initial release
  */
 
+use BlueSpice\Services;
+
 /**
  * Base class for UniversalExport PDF Module extension
  * @package BlueSpice_Extensions
@@ -208,7 +210,10 @@ class UEModulePDFRecursive extends BsExtensionMW {
 				continue;
 			}
 
-			$parser = new \BlueSpice\Utility\UrlTitleParser( $href, MediaWiki\MediaWikiServices::getInstance()->getMainConfig() );
+			$parser = new \BlueSpice\Utility\UrlTitleParser(
+				$href,
+				Services::getInstance()->getMainConfig()
+			);
 			$pathBasename = $parser->parseTitle()->getFullText();
 
 			if ( !isset( $linkMap[$pathBasename] ) ) { //Do we have a mapping?
