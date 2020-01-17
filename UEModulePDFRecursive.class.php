@@ -147,7 +147,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 			}
 
 			$title = Title::newFromText( $linkTitle );
-			if ( $title == null ) {
+			if ( $title == null || !$title->canExist() ) {
 				continue;
 			}
 
@@ -161,8 +161,14 @@ class UEModulePDFRecursive extends BsExtensionMW {
 			}
 
 			$pageProvider = new BsPDFPageProvider();
-			$pageProviderContent = $pageProvider->getPage( [ 'article-id' => $title->getArticleID() ] );
+			$pageProviderContent = $pageProvider->getPage( [
+				'article-id' => $title->getArticleID(),
+				'title' => $title->getFullText()
+			] );
 
+			if ( !isset( $pageProviderContent['dom'] ) ) {
+				continue;
+			}
 			$DOMDocument = $pageProviderContent['dom'];
 
 			$documentLinks = $DOMDocument->getElementsByTagName( 'a' );
