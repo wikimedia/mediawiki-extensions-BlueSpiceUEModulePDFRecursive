@@ -130,6 +130,14 @@ class UEModulePDFRecursive extends BsExtensionMW {
 		);
 		$node = $newDOM->importNode( $pageDOM, true );
 		$linkMap = [];
+		$rootTitle = \Title::newFromText( $template['title-element']->nodeValue );
+		if ( $pageDOM->getElementsByTagName( 'a' )->item( 0 )->getAttribute( 'id' ) === '' ) {
+			$pageDOM->getElementsByTagName( 'a' )->item( 0 )->setAttribute(
+				'id',
+				md5( 'bs-ue-' . $rootTitle->getPrefixedDBKey() )
+			);
+		}
+
 		$linkMap[ $template['title-element']->nodeValue ]
 			= $pageDOM->getElementsByTagName( 'a' )->item( 0 )->getAttribute( 'id' );
 
@@ -176,10 +184,18 @@ class UEModulePDFRecursive extends BsExtensionMW {
 			$DOMDocument = $pageProviderContent['dom'];
 
 			$documentLinks = $DOMDocument->getElementsByTagName( 'a' );
+
 			// set array index from $linkMap
 			if ( $documentLinks->item( 0 ) instanceof DOMElement ) {
+				if ( $documentLinks->item( 0 )->getAttribute( 'id' ) === '' ) {
+					$documentLinks->item( 0 )->setAttribute(
+						'id',
+						md5( 'bs-ue-' . $title->getPrefixedDBKey() )
+					);
+				}
 				$linkMap[ $title->getPrefixedText() ] = $documentLinks->item( 0 )->getAttribute( 'id' );
 			}
+
 			$contents['content'][] = $DOMDocument->documentElement;
 			$pages[] = $title->getPrefixedText();
 		}
@@ -228,7 +244,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 				$href,
 				Services::getInstance()->getMainConfig()
 			);
-			$pathBasename = $parser->parseTitle()->getFullText();
+			$pathBasename = $parser->parseTitle()->getPrefixedText();
 
 			if ( !isset( $linkMap[$pathBasename] ) ) {
 				// Do we have a mapping?
