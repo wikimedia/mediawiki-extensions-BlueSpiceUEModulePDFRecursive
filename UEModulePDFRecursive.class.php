@@ -58,10 +58,14 @@ class UEModulePDFRecursive extends BsExtensionMW {
 	 * @return bool Always true to keep hook running
 	 */
 	public function onSkinTemplateOutputPageBeforeExec( &$skin, &$template ) {
-		if ( $skin->getTitle()->isContentPage() === false ) {
+		$title = $skin->getTitle();
+		if ( $title->isContentPage() === false ) {
 			return true;
 		}
-		if ( !$skin->getTitle()->userCan( 'uemodulepdfrecursive-export' ) ) {
+		if ( !\MediaWik\MediaWikiServices::getInstance()
+			->getPermissionManager()
+			->userCan( 'uemodulepdfrecursive-export', $skin->getUser(), $title )
+		) {
 			return true;
 		}
 
@@ -144,6 +148,8 @@ class UEModulePDFRecursive extends BsExtensionMW {
 		$newDOM->appendChild( $node );
 		$links = $pageDOM->getElementsByTagName( 'a' );
 		$pages = [];
+		$pm = \MediaWiki\MediaWikiServices::getInstance()->getPermissionManager();
+		$user = $this->getUser();
 		foreach ( $links as $link ) {
 			$class = $link->getAttribute( 'class' );
 			$classes = explode( ' ', $class );
@@ -168,7 +174,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 				continue;
 			}
 
-			if ( !$title->userCan( 'read' ) ) {
+			if ( !$pm->userCan( 'read', $user, $title ) ) {
 				continue;
 			}
 
