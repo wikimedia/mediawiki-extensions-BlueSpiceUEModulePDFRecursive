@@ -34,6 +34,7 @@
  */
 
 use BlueSpice\Services;
+use MediaWiki\MediaWikiServices;
 
 /**
  * Base class for UniversalExport PDF Module extension
@@ -62,7 +63,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 		if ( $title->isContentPage() === false ) {
 			return true;
 		}
-		if ( !\MediaWik\MediaWikiServices::getInstance()
+		if ( !MediaWikiServices::getInstance()
 			->getPermissionManager()
 			->userCan( 'uemodulepdfrecursive-export', $skin->getUser(), $title )
 		) {
