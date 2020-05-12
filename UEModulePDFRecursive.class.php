@@ -92,7 +92,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 		$currentQueryParams['ue[recursive]'] = '1';
 
 		return [
-			'id' => 'pdf-subpages',
+			'id' => 'pdf-recursive',
 			'href' => $specialPage->getLinkUrl( $currentQueryParams ),
 			'title' => wfMessage( 'bs-uemodulepdfrecursive-widgetlink-recursive-title' )->text(),
 			'text' => wfMessage( 'bs-uemodulepdfrecursive-widgetlink-recursive-text' )->text(),
