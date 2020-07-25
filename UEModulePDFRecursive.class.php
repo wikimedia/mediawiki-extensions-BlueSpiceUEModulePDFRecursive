@@ -48,7 +48,10 @@ class UEModulePDFRecursive extends BsExtensionMW {
 	 */
 	protected function initExt() {
 		// Hooks
-		$this->setHook( 'SkinTemplateOutputPageBeforeExec' );
+		$this->setHook(
+			'ChameleonSkinTemplateOutputPageBeforeExec',
+			'onSkinTemplateOutputPageBeforeExec'
+		);
 		$this->setHook( 'BSUEModulePDFBeforeAddingContent' );
 	}
 
