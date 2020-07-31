@@ -32,8 +32,6 @@
  * v1.20.0
  * - Initial release
  */
-
-use BlueSpice\Services;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -230,42 +228,49 @@ class UEModulePDFRecursive extends BsExtensionMW {
 		$anchors = $domNode->getElementsByTagName( 'a' );
 		foreach ( $anchors as $anchor ) {
 			$href = null;
-			// $linkTitle = $anchor->getAttribute('title');
-			$href  = $anchor->getAttribute( 'href' );
-			$class = $anchor->getAttribute( 'class' );
+			$linkTitle = $anchor->getAttribute( 'data-bs-title' );
+			if ( $linkTitle ) {
+				$pathBasename = $linkTitle;
+			} else {
+				$href = $anchor->getAttribute( 'href' );
 
-			if ( empty( $href ) ) {
-				// Jumplink targets
-				continue;
+				$class = $anchor->getAttribute( 'class' );
+
+				if ( empty( $href ) ) {
+					// Jumplink targets
+					continue;
+				}
+
+				$classes = explode( ' ', $class );
+
+				if ( in_array( 'external', $classes ) ) {
+					continue;
+				}
+
+				$parsedHref = parse_url( $href );
+				if ( !isset( $parsedHref['path'] ) ) {
+					continue;
+				}
+
+				$parser = new \BlueSpice\Utility\UrlTitleParser(
+					$href, MediaWiki\MediaWikiServices::getInstance()->getMainConfig(), true
+				);
+				$parsedTitle = $parser->parseTitle();
+				if ( !$parsedTitle instanceof Title ) {
+					continue;
+				}
+				$pathBasename = $parsedTitle->getPrefixedText();
 			}
-
-			$classes = explode( ' ', $class );
-
-			if ( in_array( 'external', $classes ) ) {
-				continue;
-			}
-
-			$parsedHref = parse_url( $href );
-			if ( !isset( $parsedHref['path'] ) ) {
-				continue;
-			}
-
-			$parser = new \BlueSpice\Utility\UrlTitleParser(
-				$href,
-				Services::getInstance()->getMainConfig()
-			);
-			$pathBasename = $parser->parseTitle()->getPrefixedText();
 
 			if ( !isset( $linkMap[$pathBasename] ) ) {
+				$pathBasename = "";
 				// Do we have a mapping?
 				/*
 				 * The following logic is an alternative way of creating internal links
-				 * in case of poorly splitted up URLs like mentioned above
+				 * in case of poorly split up URLs like mentioned above
 				 */
 				if ( filter_var( $href, FILTER_VALIDATE_URL ) ) {
-					$pathBasename = "";
 					$hrefDecoded = urldecode( $href );
-
 					foreach ( $linkMap as $linkKey => $linkValue ) {
 						if ( strpos( str_replace( '_', ' ', $hrefDecoded ), $linkKey ) ) {
 							$pathBasename = $linkKey;
@@ -278,7 +283,11 @@ class UEModulePDFRecursive extends BsExtensionMW {
 				}
 			}
 
-			$anchor->setAttribute( 'href', '#' . $linkMap[$pathBasename] );
+			if ( !$pathBasename || !isset( $linkMap[$pathBasename] ) ) {
+				$anchor->removeAttribute( 'href' );
+			} else {
+				$anchor->setAttribute( 'href', '#' . $linkMap[$pathBasename] );
+			}
 		}
 	}
 
