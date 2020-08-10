@@ -220,7 +220,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 			$href = null;
 			$linkTitle = $anchor->getAttribute( 'data-bs-title' );
 			if ( $linkTitle ) {
-				$pathBasename = $linkTitle;
+				$pathBasename = str_replace( '_', ' ', $linkTitle );
 			} else {
 				$href  = $anchor->getAttribute( 'href' );
 
@@ -252,32 +252,11 @@ class UEModulePDFRecursive extends BsExtensionMW {
 				$pathBasename = $parsedTitle->getPrefixedText();
 			}
 
-			if ( !isset( $linkMap[$pathBasename] ) ) {
-				$pathBasename = "";
-				// Do we have a mapping?
-				/*
-				 * The following logic is an alternative way of creating internal links
-				 * in case of poorly split up URLs like mentioned above
-				 */
-				if ( filter_var( $href, FILTER_VALIDATE_URL ) ) {
-					$hrefDecoded = urldecode( $href );
-					foreach ( $linkMap as $linkKey => $linkValue ) {
-						if ( strpos( str_replace( '_', ' ', $hrefDecoded ), $linkKey ) ) {
-							$pathBasename = $linkKey;
-						}
-					}
-
-					if ( empty( $pathBasename ) || strlen( $pathBasename ) <= 0 ) {
-						continue;
-					}
-				}
+			if ( !isset( $linkMap[$pathBasename ] ) ) {
+				continue;
 			}
 
-			if ( !$pathBasename || !isset( $linkMap[$pathBasename] ) ) {
-				$anchor->removeAttribute( 'href' );
-			} else {
-				$anchor->setAttribute( 'href', '#' . $linkMap[$pathBasename] );
-			}
+			$anchor->setAttribute( 'href', '#' . $linkMap[$pathBasename] );
 		}
 	}
 
