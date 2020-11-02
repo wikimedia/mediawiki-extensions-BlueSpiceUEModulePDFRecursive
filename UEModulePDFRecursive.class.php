@@ -214,7 +214,13 @@ class UEModulePDFRecursive extends BsExtensionMW {
 		}
 
 		array_unshift( $contents['content'], $documentToc->documentElement );
-		\Hooks::run( 'UEModulePDFRecursiveAfterContent', [ $this, &$contents ] );
+		MediaWikiServices::getInstance()->getHookContainer()->run(
+			'UEModulePDFRecursiveAfterContent',
+			[
+				$this,
+				&$contents
+			]
+		);
 
 		return true;
 	}
