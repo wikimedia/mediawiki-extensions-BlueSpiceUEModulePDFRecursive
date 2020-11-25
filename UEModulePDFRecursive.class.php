@@ -108,15 +108,15 @@ class UEModulePDFRecursive extends BsExtensionMW {
 	 * @return bool Always true to keep hook running
 	 */
 	public function onBSUEModulePDFBeforeAddingContent( &$template, &$contents, $caller,
-		$params = [] ) {
+		&$params = [] ) {
 		global $wgRequest;
-		$params = $caller->aParams;
-		if ( empty( $params ) ) {
-			$ueParams = $wgRequest->getArray( 'ue' );
-			$params['recursive'] = isset( $ueParams['recursive'] ) ? $ueParams['recursive'] : 0;
+		$ueParams = $caller->aParams;
+		if ( empty( $ueParams ) ) {
+			$requestParams = $wgRequest->getArray( 'ue' );
+			$ueParams['recursive'] = isset( $requestParams['recursive'] ) ? $requestParams['recursive'] : 0;
 		}
 
-		if ( $params['recursive'] == 0 ) {
+		if ( $ueParams['recursive'] == 0 ) {
 			return true;
 		}
 
@@ -127,6 +127,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 			$pageDOM->getAttribute( 'class' ) . ' bs-source-page'
 		);
 		$node = $newDOM->importNode( $pageDOM, true );
+
 		$includedTitleMap = [];
 		$rootTitle = \Title::newFromText( $template['title-element']->nodeValue );
 		if ( $pageDOM->getElementsByTagName( 'a' )->item(0)->getAttribute( 'id' ) === '' ) {
@@ -142,6 +143,10 @@ class UEModulePDFRecursive extends BsExtensionMW {
 		$newDOM->appendChild( $node );
 
 		$includedTitles = $this->findLinkedTitles( $pageDOM );
+		if ( count( $includedTitles ) < 1 ) {
+			return true;
+		}
+
 		$titleMap = array_merge(
 			$includedTitleMap,
 			$this->generateIncludedTitlesMap( $includedTitles )
@@ -229,7 +234,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 				continue;
 			}
 
-			$linkTitle = $link->getAttribute( 'bs-data-title' );
+			$linkTitle = $link->getAttribute( 'data-bs-title' );
 			if ( empty( $linkTitle ) || empty( $link->nodeValue ) ) {
 				continue;
 			}
@@ -299,7 +304,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 
 				$parsedHref = parse_url( $href );
 
-				if ( isset( $parsedHref['fragment'] ) ) {
+				if ( isset( $linkMap[$pathBasename] ) && isset( $parsedHref['fragment'] ) ) {
 					$linkMap[$pathBasename] = $linkMap[$pathBasename] . '-' . md5( $parsedHref['fragment'] );
 				}
 			} else {
