@@ -32,6 +32,8 @@
  * v1.20.0
  * - Initial release
  */
+
+use BlueSpice\Utility\UrlTitleParser;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -112,19 +114,23 @@ class UEModulePDFRecursive extends BsExtensionMW {
 	 * @param array &$template
 	 * @param array &$contents
 	 * @param \stdClass $caller
-	 * @param array $params
+	 * @param array &$params
 	 * @return bool Always true to keep hook running
 	 */
-	public function onBSUEModulePDFBeforeAddingContent( &$template, &$contents, $caller,
-		$params = [] ) {
+	public function onBSUEModulePDFBeforeAddingContent(
+		&$template,
+		&$contents,
+		$caller,
+		&$params = []
+	) {
 		global $wgRequest;
-		$params = $caller->aParams;
-		if ( empty( $params ) ) {
-			$ueParams = $wgRequest->getArray( 'ue' );
-			$params['recursive'] = isset( $ueParams['recursive'] ) ? $ueParams['recursive'] : 0;
+		$ueParams = $caller->aParams;
+		if ( empty( $ueParams ) ) {
+			$requestParams = $wgRequest->getArray( 'ue' );
+			$ueParams['recursive'] = isset( $requestParams['recursive'] ) ? $requestParams['recursive'] : 0;
 		}
 
-		if ( $params['recursive'] == 0 ) {
+		if ( $ueParams['recursive'] == 0 ) {
 			return true;
 		}
 
@@ -135,85 +141,43 @@ class UEModulePDFRecursive extends BsExtensionMW {
 			$pageDOM->getAttribute( 'class' ) . ' bs-source-page'
 		);
 		$node = $newDOM->importNode( $pageDOM, true );
-		$linkMap = [];
+
+		$includedTitleMap = [];
 		$rootTitle = \Title::newFromText( $template['title-element']->nodeValue );
 		if ( $pageDOM->getElementsByTagName( 'a' )->item( 0 )->getAttribute( 'id' ) === '' ) {
 			$pageDOM->getElementsByTagName( 'a' )->item( 0 )->setAttribute(
 				'id',
-				md5( 'bs-ue-' . $rootTitle->getPrefixedDBKey() )
+				md5( $rootTitle->getPrefixedText() )
 			);
 		}
 
-		$linkMap[ $template['title-element']->nodeValue ]
+		$includedTitleMap[ $template['title-element']->nodeValue ]
 			= $pageDOM->getElementsByTagName( 'a' )->item( 0 )->getAttribute( 'id' );
 
 		$newDOM->appendChild( $node );
-		$links = $pageDOM->getElementsByTagName( 'a' );
-		$pages = [];
-		$pm = \MediaWiki\MediaWikiServices::getInstance()->getPermissionManager();
-		$user = $this->getUser();
-		foreach ( $links as $link ) {
-			$class = $link->getAttribute( 'class' );
-			$classes = explode( ' ', $class );
-			$excludeClasses = [ 'new', 'external' ];
-			// HINT: http://stackoverflow.com/questions/7542694/in-array-multiple-values
-			if ( count( array_intersect( $classes, $excludeClasses ) ) > 0 ) {
-				continue;
-			}
 
-			$linkTitle = $link->getAttribute( 'title' );
-			if ( empty( $linkTitle ) || empty( $link->nodeValue ) ) {
-				continue;
-			}
-
-			$title = Title::newFromText( $linkTitle );
-			if ( $title == null || !$title->canExist() ) {
-				continue;
-			}
-
-			// Avoid double export
-			if ( in_array( $title->getPrefixedText(), $pages ) ) {
-				continue;
-			}
-
-			if ( !$pm->userCan( 'read', $user, $title ) ) {
-				continue;
-			}
-
-			$pageProvider = new BsPDFPageProvider();
-			$pageProviderContent = $pageProvider->getPage( [
-				'article-id' => $title->getArticleID(),
-				'title' => $title->getFullText()
-			] );
-
-			if ( !isset( $pageProviderContent['dom'] ) ) {
-				continue;
-			}
-			$DOMDocument = $pageProviderContent['dom'];
-
-			$documentLinks = $DOMDocument->getElementsByTagName( 'a' );
-
-			// set array index from $linkMap
-			if ( $documentLinks->item( 0 ) instanceof DOMElement ) {
-				if ( $documentLinks->item( 0 )->getAttribute( 'id' ) === '' ) {
-					$documentLinks->item( 0 )->setAttribute(
-						'id',
-						md5( 'bs-ue-' . $title->getPrefixedDBKey() )
-					);
-				}
-				$linkMap[ $title->getPrefixedText() ] = $documentLinks->item( 0 )->getAttribute( 'id' );
-			}
-
-			$contents['content'][] = $DOMDocument->documentElement;
-			$pages[] = $title->getPrefixedText();
+		$includedTitles = $this->findLinkedTitles( $pageDOM );
+		if ( count( $includedTitles ) < 1 ) {
+			return true;
 		}
 
-		$documentToc = $this->makeToc( $linkMap );
+		$titleMap = array_merge(
+			$includedTitleMap,
+			$this->generateIncludedTitlesMap( $includedTitles )
+		);
+
+		$this->setIncludedTitlesId( $includedTitles, $titleMap );
+		$this->addIncludedTitlesContent( $includedTitles, $titleMap, $contents['content'] );
+
 		foreach ( $contents['content'] as $oDom ) {
-			$this->rewriteLinks( $oDom, $linkMap );
+			$this->rewriteLinks( $oDom, $titleMap );
 		}
 
-		array_unshift( $contents['content'], $documentToc->documentElement );
+		$this->makeBookmarks( $template, $includedTitles );
+
+		$documentToc = $this->makeToc( $titleMap );
+		array_unshift( $contents, $documentToc->documentElement );
+
 		MediaWikiServices::getInstance()->getHookContainer()->run(
 			'UEModulePDFRecursiveAfterContent',
 			[
@@ -227,26 +191,145 @@ class UEModulePDFRecursive extends BsExtensionMW {
 
 	/**
 	 *
+	 * @param array $includedTitles
+	 * @param array $includedTitleMap
+	 * @param array &$contents
+	 */
+	private function addIncludedTitlesContent( $includedTitles, $includedTitleMap, &$contents ) {
+		foreach ( $includedTitles as $name => $content ) {
+			$contents[] = $content['dom']->documentElement;
+		}
+	}
+
+	/**
+	 *
+	 * @param array $includedTitles
+	 * @return array
+	 */
+	private function generateIncludedTitlesMap( $includedTitles ) {
+		$includedTitleMap = [];
+
+		foreach ( $includedTitles as $name => $content ) {
+			$includedTitleMap = array_merge( $includedTitleMap, [ $name => md5( $name ) ] );
+		}
+
+		return $includedTitleMap;
+	}
+
+	/**
+	 *
+	 * @param array &$includedTitles
+	 * @param array $includedTitleMap
+	 */
+	private function setIncludedTitlesId( &$includedTitles, $includedTitleMap ) {
+		foreach ( $includedTitles as $name => $content ) {
+			// set array index from $includedTitleMap
+			$documentLinks = $content['dom']->getElementsByTagName( 'a' );
+			if ( $documentLinks->item( 0 ) instanceof DOMElement ) {
+				$documentLinks->item( 0 )->setAttribute(
+					'id',
+					$includedTitleMap[$name]
+				);
+			}
+		}
+	}
+
+	/**
+	 *
+	 * @param DOMDocument $rootTitleDom
+	 * @return array
+	 */
+	private function findLinkedTitles( $rootTitleDom ) {
+		$linkdedTitles = [];
+
+		$links = $rootTitleDom->getElementsByTagName( 'a' );
+
+		foreach ( $links as $link ) {
+			$class = $link->getAttribute( 'class' );
+			$classes = explode( ' ', $class );
+			$excludeClasses = [ 'new', 'external' ];
+
+			// HINT: http://stackoverflow.com/questions/7542694/in-array-multiple-values
+			if ( count( array_intersect( $classes, $excludeClasses ) ) > 0 ) {
+				continue;
+			}
+
+			$linkTitle = $link->getAttribute( 'data-bs-title' );
+			if ( empty( $linkTitle ) || empty( $link->nodeValue ) ) {
+				continue;
+			}
+
+			$title = Title::newFromText( $linkTitle );
+			if ( $title == null || !$title->canExist() ) {
+				continue;
+			}
+
+			// Avoid double export
+			if ( in_array( $title->getPrefixedText(), $linkdedTitles ) ) {
+				continue;
+			}
+
+			if ( !$title->userCan( 'read' ) ) {
+				continue;
+			}
+
+			$pageProvider = new BsPDFPageProvider();
+			$pageContent = $pageProvider->getPage( [
+				'article-id' => $title->getArticleID(),
+				'title' => $title->getFullText()
+			] );
+
+			if ( !isset( $pageContent['dom'] ) ) {
+				continue;
+			}
+
+			$linkdedTitles = array_merge(
+				$linkdedTitles,
+				[
+					$title->getPrefixedText() => $pageContent
+				]
+			);
+		}
+
+		ksort( $linkdedTitles );
+
+		return $linkdedTitles;
+	}
+
+	/**
+	 *
+	 * @param array &$template
+	 * @param array $includedTitles
+	 */
+	private function makeBookmarks( &$template, $includedTitles ) {
+		foreach ( $includedTitles as $name => $content ) {
+			$bookmarkNode = BsUniversalExportHelper::getBookmarkElementForPageDOM( $content['dom'] );
+			$bookmarkNode = $template['dom']->importNode( $bookmarkNode, true );
+
+			$template['bookmarks-element']->appendChild( $bookmarkNode );
+		}
+	}
+
+	/**
+	 *
 	 * @param DOMNode &$domNode
 	 * @param array $linkMap
 	 */
 	protected function rewriteLinks( &$domNode, $linkMap ) {
 		$anchors = $domNode->getElementsByTagName( 'a' );
 		foreach ( $anchors as $anchor ) {
-			$href = null;
 			$linkTitle = $anchor->getAttribute( 'data-bs-title' );
+			$href  = $anchor->getAttribute( 'href' );
+
 			if ( $linkTitle ) {
 				$pathBasename = str_replace( '_', ' ', $linkTitle );
-				$href  = $anchor->getAttribute( 'href' );
 
 				$parsedHref = parse_url( $href );
-				$linkMap[$pathBasename] = md5( $pathBasename );
-				if ( isset( $parsedHref['fragment'] ) ) {
-					$linkMap[$pathBasename] = md5( $pathBasename ) . '-' . md5( $parsedHref['fragment'] );
+
+				if ( isset( $linkMap[$pathBasename] ) && isset( $parsedHref['fragment'] ) ) {
+					$linkMap[$pathBasename] = $linkMap[$pathBasename] . '-' . md5( $parsedHref['fragment'] );
 				}
 			} else {
-				$href = $anchor->getAttribute( 'href' );
-
 				$class = $anchor->getAttribute( 'class' );
 
 				if ( empty( $href ) ) {
@@ -255,7 +338,6 @@ class UEModulePDFRecursive extends BsExtensionMW {
 				}
 
 				$classes = explode( ' ', $class );
-
 				if ( in_array( 'external', $classes ) ) {
 					continue;
 				}
@@ -265,19 +347,22 @@ class UEModulePDFRecursive extends BsExtensionMW {
 					continue;
 				}
 
-				$parser = new \BlueSpice\Utility\UrlTitleParser(
-					$href, MediaWiki\MediaWikiServices::getInstance()->getMainConfig(), true
+				$parser = new UrlTitleParser(
+					$href, MediaWikiServices::getInstance()->getMainConfig(), true
 				);
 				$parsedTitle = $parser->parseTitle();
+
 				if ( !$parsedTitle instanceof Title ) {
 					continue;
 				}
+
 				$pathBasename = $parsedTitle->getPrefixedText();
 			}
 
-			if ( !isset( $linkMap[$pathBasename ] ) ) {
+			if ( !isset( $linkMap[$pathBasename] ) ) {
 				continue;
 			}
+
 			$anchor->setAttribute( 'href', '#' . $linkMap[$pathBasename] );
 		}
 	}
