@@ -176,7 +176,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 		$this->makeBookmarks( $template, $includedTitles );
 
 		$documentToc = $this->makeToc( $titleMap );
-		array_unshift( $contents, $documentToc->documentElement );
+		array_unshift( $contents['content'], $documentToc->documentElement );
 
 		MediaWikiServices::getInstance()->getHookContainer()->run(
 			'UEModulePDFRecursiveAfterContent',
