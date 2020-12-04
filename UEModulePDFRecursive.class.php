@@ -47,66 +47,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 	 * Initialization of UEModulePDFRecursive extension
 	 */
 	protected function initExt() {
-		// Hooks
-		$this->setHook(
-			'ChameleonSkinTemplateOutputPageBeforeExec',
-			'onSkinTemplateOutputPageBeforeExec'
-		);
 		$this->setHook( 'BSUEModulePDFBeforeAddingContent' );
-	}
-
-	/**
-	 * Hook handler to add menu
-	 * @param SkinTemplate &$skin
-	 * @param QuickTemplate &$template
-	 * @return bool Always true to keep hook running
-	 */
-	public function onSkinTemplateOutputPageBeforeExec( &$skin, &$template ) {
-		$title = $skin->getTitle();
-		if ( $title->isContentPage() === false ) {
-			return true;
-		}
-		if ( !MediaWikiServices::getInstance()
-			->getPermissionManager()
-			->userCan( 'uemodulepdfrecursive-export', $skin->getUser(), $title )
-		) {
-			return true;
-		}
-
-		$template->data['bs_export_menu'][] = $this->buildContentAction();
-
-		return true;
-	}
-
-	/**
-	 * builds the contentAction array for the current page
-	 *
-	 * @return array contentAction
-	 * @throws MWException
-	 */
-	private function buildContentAction() {
-		$currentQueryParams = $this->getRequest()->getValues();
-		if ( isset( $currentQueryParams['title'] ) ) {
-			$title = $currentQueryParams['title'];
-		} else {
-			$title = '';
-		}
-		$specialPageParameter = BsCore::sanitize( $title, '', BsPARAMTYPE::STRING );
-		$specialPage = SpecialPage::getTitleFor( 'UniversalExport', $specialPageParameter );
-		if ( isset( $currentQueryParams['title'] ) ) {
-			unset( $currentQueryParams['title'] );
-		}
-		$currentQueryParams['ue[module]'] = 'pdf';
-		$currentQueryParams['ue[recursive]'] = '1';
-
-		return [
-			'id' => 'pdf-recursive',
-			'href' => $specialPage->getLinkUrl( $currentQueryParams ),
-			'title' => wfMessage( 'bs-uemodulepdfrecursive-widgetlink-recursive-title' )->text(),
-			'text' => wfMessage( 'bs-uemodulepdfrecursive-widgetlink-recursive-text' )->text(),
-			'class' => 'bs-ue-export-link',
-			'iconClass' => 'icon-file-pdf bs-ue-export-link'
-		];
 	}
 
 	/**
