@@ -35,6 +35,9 @@
 			}
 		}
 	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\UEModulePDFRecursive\\": "src/"
+	},
 	"GroupPermissions": {
 		"*": {
 			"uemodulepdfrecursive-export": true
@@ -51,5 +54,9 @@
 	"AutoloadClasses": {
 		"UEModulePDFRecursive": "UEModulePDFRecursive.class.php"
 	},
+	"Hooks": {
+		"ChameleonSkinTemplateOutputPageBeforeExec": "\\BlueSpice\\UEModulePDFRecursive\\Hook\\ChameleonSkinTemplateOutputPageBeforeExec\\AddWidget::callback"
+	},
+	"load_composer_autoloader": true,
 	"manifest_version": 2
 }
