@@ -55,7 +55,8 @@
 		"UEModulePDFRecursive": "UEModulePDFRecursive.class.php"
 	},
 	"Hooks": {
-		"ChameleonSkinTemplateOutputPageBeforeExec": "\\BlueSpice\\UEModulePDFRecursive\\Hook\\ChameleonSkinTemplateOutputPageBeforeExec\\AddWidget::callback"
+		"ChameleonSkinTemplateOutputPageBeforeExec": "\\BlueSpice\\UEModulePDFRecursive\\Hook\\ChameleonSkinTemplateOutputPageBeforeExec\\AddWidget::callback",
+		"BSUEModulePDFBeforeAddingContent": "\\BlueSpice\\UEModulePDFRecursive\\Hook\\BSUEModulePDFBeforeAddingContent\\AddRecursivePages::callback"
 	},
 	"load_composer_autoloader": true,
 	"manifest_version": 2
