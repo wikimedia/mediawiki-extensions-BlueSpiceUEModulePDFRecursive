@@ -19,7 +19,7 @@
 		"BlueSpiceFoundation": {
 			"Extensions": {
 				"BlueSpiceUEModulePDFRecursive": {
-					"className": "UEModulePDFRecursive",
+					"className": "\\BlueSpice\\UEModulePDFRecursive\\Extension",
 					"extPath": "/BlueSpiceUEModulePDFRecursive",
 					"package": "BlueSpice Pro",
 					"status": "stable"
@@ -50,9 +50,6 @@
 		"BlueSpiceUEModulePDFRecursive": [
 			"i18n"
 		]
-	},
-	"AutoloadClasses": {
-		"UEModulePDFRecursive": "UEModulePDFRecursive.class.php"
 	},
 	"Hooks": {
 		"ChameleonSkinTemplateOutputPageBeforeExec": "\\BlueSpice\\UEModulePDFRecursive\\Hook\\ChameleonSkinTemplateOutputPageBeforeExec\\AddWidget::callback",
