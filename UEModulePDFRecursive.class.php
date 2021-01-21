@@ -75,23 +75,16 @@ class UEModulePDFRecursive extends BsExtensionMW {
 	 * @throws MWException
 	 */
 	private function buildContentAction() {
-		$currentQueryParams = $this->getRequest()->getValues();
-		if ( isset( $currentQueryParams['title'] ) ) {
-			$title = $currentQueryParams['title'];
-		} else {
-			$title = '';
-		}
-		$specialPageParameter = BsCore::sanitize( $title, '', BsPARAMTYPE::STRING );
-		$specialPage = SpecialPage::getTitleFor( 'UniversalExport', $specialPageParameter );
-		if ( isset( $currentQueryParams['title'] ) ) {
-			unset( $currentQueryParams['title'] );
-		}
-		$currentQueryParams['ue[module]'] = 'pdf';
-		$currentQueryParams['ue[recursive]'] = '1';
+		/** @var \BlueSpice\UniversalExport\Util $util */
+		$util = \MediaWiki\MediaWikiServices::getInstance()->getService(
+			'BSUniversalExportUtils'
+		);
 
 		return [
 			'id' => 'pdf-recursive',
-			'href' => $specialPage->getLinkUrl( $currentQueryParams ),
+			'href' => $util->getExportLink( $this->getRequest(), 'pdf', [
+				'ue[recursive]' => 1
+			] ),
 			'title' => wfMessage( 'bs-uemodulepdfrecursive-widgetlink-recursive-title' )->text(),
 			'text' => wfMessage( 'bs-uemodulepdfrecursive-widgetlink-recursive-text' )->text(),
 			'class' => 'bs-ue-export-link',
