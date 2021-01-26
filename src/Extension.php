@@ -28,6 +28,10 @@
  * @filesource
  */
 
+namespace BlueSpice\UEModulePDFRecursive;
+
+use BlueSpice\Extension as BaseExtension;
+
 /* Changelog
  * v1.20.0
  * - Initial release
@@ -38,5 +42,5 @@
  * @package BlueSpice_Extensions
  * @subpackage UEModulePDFRecursive
  */
-class UEModulePDFRecursive extends BsExtensionMW {
+class Extension extends BaseExtension {
 }
