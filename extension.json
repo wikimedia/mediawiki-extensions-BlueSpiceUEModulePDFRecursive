@@ -19,37 +19,22 @@
 		"BlueSpiceFoundation": {
 			"Extensions": {
 				"BlueSpiceUEModulePDFRecursive": {
-					"className": "UEModulePDFRecursive",
+					"className": "BlueSpice\\UEModulePDFRecursive\\Extension",
 					"extPath": "/BlueSpiceUEModulePDFRecursive",
 					"package": "BlueSpice Pro",
 					"status": "stable"
 				}
-			},
-			"PermissionRegistry": {
-				"uemodulepdfrecursive-export": {
-					"type": "namespace",
-					"roles": [
-						"reader"
-					]
-				}
 			}
 		}
 	},
-	"GroupPermissions": {
-		"*": {
-			"uemodulepdfrecursive-export": true
-		}
+	"AutoloadNamespaces": {
+		"BlueSpice\\UEModulePDFRecursive\\": "src/"
 	},
-	"AvailableRights": [
-		"uemodulepdfrecursive-export"
-	],
 	"MessagesDirs": {
 		"BlueSpiceUEModulePDFRecursive": [
 			"i18n"
 		]
 	},
-	"AutoloadClasses": {
-		"UEModulePDFRecursive": "UEModulePDFRecursive.class.php"
-	},
+	"load_composer_autoloader": true,
 	"manifest_version": 2
 }
