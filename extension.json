@@ -24,36 +24,17 @@
 					"package": "BlueSpice Pro",
 					"status": "stable"
 				}
-			},
-			"PermissionRegistry": {
-				"uemodulepdfrecursive-export": {
-					"type": "namespace",
-					"roles": [
-						"reader"
-					]
-				}
 			}
 		}
 	},
 	"AutoloadNamespaces": {
 		"BlueSpice\\UEModulePDFRecursive\\": "src/"
 	},
-	"GroupPermissions": {
-		"*": {
-			"uemodulepdfrecursive-export": true
-		}
-	},
-	"AvailableRights": [
-		"uemodulepdfrecursive-export"
-	],
+
 	"MessagesDirs": {
 		"BlueSpiceUEModulePDFRecursive": [
 			"i18n"
 		]
-	},
-	"Hooks": {
-		"ChameleonSkinTemplateOutputPageBeforeExec": "\\BlueSpice\\UEModulePDFRecursive\\Hook\\ChameleonSkinTemplateOutputPageBeforeExec\\AddWidget::callback",
-		"BSUEModulePDFBeforeAddingContent": "\\BlueSpice\\UEModulePDFRecursive\\Hook\\BSUEModulePDFBeforeAddingContent\\AddRecursivePages::callback"
 	},
 	"load_composer_autoloader": true,
 	"manifest_version": 2
