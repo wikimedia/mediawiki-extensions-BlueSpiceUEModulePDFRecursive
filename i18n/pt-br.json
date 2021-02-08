@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Eduardo Addad de Oliveira"
+			"Eduardo Addad de Oliveira",
+			"Eduardoaddad"
 		]
 	},
 	"bs-uemodulepdfrecursive-extension-description": "Permite a exportação recursiva de páginas para o formato PDF.",
