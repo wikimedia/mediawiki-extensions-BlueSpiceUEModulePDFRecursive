@@ -223,7 +223,7 @@ class UEModulePDFRecursive extends BsExtensionMW {
 		foreach ( $links as $link ) {
 			$class = $link->getAttribute( 'class' );
 			$classes = explode( ' ', $class );
-			$excludeClasses = ['new', 'external'];
+			$excludeClasses = ['new', 'external', 'media'];
 
 			// HINT: http://stackoverflow.com/questions/7542694/in-array-multiple-values
 			if ( count( array_intersect( $classes, $excludeClasses ) ) > 0 ) {
