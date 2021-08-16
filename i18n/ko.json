@@ -6,5 +6,6 @@
 	},
 	"bs-uemodulepdfrecursive-widgetlink-recursive-title": "이 문서 및 링크된 모든 문서를 PDF로 내보냅니다.",
 	"action-uemodulepdfrecursive-export": "링크된 모든 문서를 포함하여 문서를 PDF로 내보낼",
-	"right-uemodulepdfrecursive-export": "링크된 모든 문서를 포함하여 문서를 PDF로 내보내기"
+	"right-uemodulepdfrecursive-export": "링크된 모든 문서를 포함하여 문서를 PDF로 내보내기",
+	"bs-uemodulepdfrecursive-extension-description": "PDF 포맷으로 재귀적 문서 내보내기를 활성화합니다."
 }
