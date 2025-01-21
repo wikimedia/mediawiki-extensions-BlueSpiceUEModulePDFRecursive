@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceUEModulePDFRecursive",
-	"version": "4.2.0-alpha",
+	"version": "5.0.0",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceUEModulePDFRecursive",
 	"author": [
@@ -8,10 +8,10 @@
 	],
 	"descriptionmsg": "bs-uemodulepdfrecursive-extension-description",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3",
-			"BlueSpiceUniversalExport": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0",
+			"BlueSpiceUniversalExport": ">= 5.0.0"
 		}
 	},
 	"type": "bluespice",
