@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yurina Tatiana"
+		]
+	},
+	"bs-uemodulepdfrecursive-extension-description": "Позволяет рекурсивно экспортировать страницы в формат PDF."
+}
