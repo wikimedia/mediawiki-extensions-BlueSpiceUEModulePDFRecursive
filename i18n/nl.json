@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"McDutchie"
+			"McDutchie",
+			"Siebrand"
 		]
 	},
-	"bs-uemodulepdfrecursive-extension-description": "Maakt recursieve export van pagina's in PDF-formaat mogelijk."
+	"bs-uemodulepdfrecursive-extension-description": "Maakt recursieve export van pagina's in pdf-opmaak mogelijk."
 }
